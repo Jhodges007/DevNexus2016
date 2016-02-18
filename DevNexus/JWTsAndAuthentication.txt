@@ -1,0 +1,87 @@
+SECURITY and Web Tokens
+
+Cross Site Request Forgery
+
+  Solutions:
+    - Synchronizer Token
+    - etc
+    - etc
+
+  Double submit cookie
+    - give 2 client cookies
+    - session id and strong random value
+    (cookie should be coming back in a custom header)
+
+  Server rejects forged requests, CSRF token header missing
+  Browser rejects forged
+
+  DO NOT: Access-Control-Allow-Origin: *
+
+  Another security help: Browsers send "Origin" header (can not be modified by js)
+
+  TOKEN AUTHENTICATION:
+  Token is way of persisting proof of authentication
+  JSON Web Tokens (JWTs) are a token format
+  JWTs are often used for access tokens and refresh token in Oauth2 workflows
+  3 part structure: (Base64- decode the parts to see contents):
+    Header, Body('Claims'), Cryptographic Signature
+    Claims Body: asserts the following...
+      1. Who issued token
+      2. When it expires
+      3. Who it represents
+      5. What they can do
+
+      Body example: {
+      "iss": "http://trustyapp.com/",
+      "exp": 39813401730,
+      "sub": "users/45678",
+      "scope": "self.api/buy",
+      }
+  Issuing JWTs:
+    User has to present credentials to get token(password, api keys)
+    Browser verifies info
+
+  Verifying:
+    Check signature and exp time (stateless authentication!)
+    Token declares scope, make authorizaiton decisions locally
+    But... how to revoke stateless authentication?
+
+  Storing JWTs:
+    Local storage is NOT secure (XSS vulnerable)
+    Use HttpOnly, Secure cookies to store access tokens in browser
+    Cookies provide an auto way of supplying tokens on requests
+    CSRF protection is essential
+
+JWT + Oauth2:
+  Oauth2 (RFC 6749) is an "authorization framework" (cure for insomnia)
+  Defines "Resource Owner Password Credentials Granted"
+
+  Access token has short lifetime and causes stateless trust - a signed JWT
+  Refresh token has long life and used to obtain more access tokens
+  Access tokens can be revoked (database)
+
+  Access token and refresh token paradigm designed to give control over implicit-
+  trust tradeoff that is made with stateless tokens
+  Refresh token sets max life of auth content
+  Authentication token sets max time of stateless auth context
+  Auth context is revoked by revoking refresh token
+  Example:
+    Secure bank app (force users out often)
+    - access token ttl = 1 Min
+    - Refresh token ttl = 30m
+    Mobile app ('always logged in')
+    - Access token = 1 hour
+    - Refresh token (4 years (lifetime of mobile device))
+
+  Demonstration:
+  github.com/stormpath/express-stormpath-angular-sample-project
+
+  auth logic:
+    Is acc token valid? (sig and exp)
+      yes? allow req
+      no? try to get new acc token, use ref token
+        worked?
+
+  Cookies Need to be secured
+  JWTs are an improvement over opaque session identifier
+  Acc token + Ref token useful strategy for scaling
