@@ -1,0 +1,73 @@
+Node Module
+
+exports.doIt = function() {} <-- this is destructuring
+exports.meaningOfLife = 42;
+
+const {doIt, meaningOfLife} =
+        require('a-module');
+
+Isomorphic Code - code that runs on the back end and front end
+
+Native ES6 modules: ongoing work, until then we use transpiler "Babel!"
+
+export function doIt() {} ===TRANSPILES TO===> exports.doIt = function() {}
+  Babel transpiler allows interoperability
+
+Default:
+  export default 42; ===TRANSPILES TO===> exports['default'] = 42;
+  what about "default" -s in Node Modules?
+  import * as _ from 'lodash' ===> ??
+
+You can not import dynamically using import syntax (if statement)!!
+  System.import('module-name').then(
+    aModule => {/*--*/});
+
+Module Loading model
+  TBD
+  Async v Sync
+  Backward and Forward compatibility with existing node modules
+  Parallel loading and parsing of modules (literally 1000s loading usually)
+
+Syntax:
+  <script> source tag - import a module (THIS IS ILLEGAL and OLD SCHOOL)
+  by definition, all ES6 modules have 'use Strict' in them
+  <module> = this method hasn't been updated in many years
+  Chrome 49 has 91% support for ES6 modules - chrome and ES2015 waiting
+    on each other for dependencies (circular problem)
+  Modules have their own scope!
+    so forget about <module></module> <div onClick= handleIt()></div>
+  Interoperability with AMD?
+
+The dependency tree goes to a lot of modules, so <module src=> does not work
+  some are bundling modules = bundle.js, which is internally using modules
+  but is externally just one file that we script source
+
+In http2 the modules in each layer will be brought in parallel
+  http2 push mode: browser will not even have to make all the requests, it
+  will send all of the responses it knows will be needed based on the first one
+  This is basically the same as bundling but without all the need for transpiling
+
+ES6 Modules are an effort to reconcile:
+  Async Modules (Browser and modules)
+  Bundling Modules
+  Syncronous Modules
+
+Using ES6 Modules in NodeJS
+$ npm install --save
+  babel-register
+  babel-plugin-transform-es2015-modules-commonjs
+
+  cat .babelrc
+  {
+  define plugins // -- OR -- can use "presets": es2015
+  }
+
+Using ES6 Modules in Client[3]
+$ npm install --save-dev
+                webpack@2.0.7-beta
+  {
+    "build": webpack public/...etc
+  }
+
+Gil Tayar, @giltayar
+https://github.com/giltayar/es6-modules-minimal
